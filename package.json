@@ -20,22 +20,20 @@
   "keywords": [
     "router"
   ],
-  "dependencies" : {
-  },
+  "dependencies": {},
   "analyze": false,
   "devDependencies": {
-    "karma" : "*",
-    "jshint" : "*",
-    "grunt" : "*",
-    "grunt-contrib-jshint" : "*",
-    "grunt-contrib-qunit" : "*",
-    "grunt-contrib-watch" : "*"
+    "karma-jasmine": "*",
+    "jshint": "*",
+    "grunt": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-jasmine": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-karma": "~0.6.2"
   },
-  "bundledDependencies": [
-  ],
+  "bundledDependencies": [],
   "license": "MIT",
   "engines": {
     "node": ">=0.6"
   }
 }
-
