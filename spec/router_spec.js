@@ -29,6 +29,24 @@ describe('router.js', function(){
       expect(router.routes).toEqual(expected);
     });
 
+    it('fires an event if a route has been registered', function(){
+      router.register({
+        foo: "foo/:bar"
+      });
+      var spy = jasmine.createSpy('eventSpy');
+      document.addEventListener('foo', spy);
+      router.recognize('foo/14');
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('fires a 404 event if it cannot match the route', function(){
+      var spy = jasmine.createSpy('eventSpy');
+      document.addEventListener('404', spy);
+      router.recognize('nothing');
+      expect(spy).toHaveBeenCalled();
+    });
+
+
   });
 
 });

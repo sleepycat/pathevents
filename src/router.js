@@ -30,3 +30,26 @@ router.register = function(routeCollection){
     }
   }
 };
+
+// XXX: this is doing WAY to many things
+router.recognize = function(path){
+  for(var route in router.routes){
+    var regex = new RegExp(route);
+    matchData = regex.exec(path);
+    var details = {};
+    details.path = path;
+    if(matchData !== null){
+      var segmentValues = matchData.slice(1);
+      for(var count=0, length = router.routes[route].length; count < length; count++){
+        details[segment[count]]=matchData[count];
+      }
+      var event = document.createEvent('CustomEvent');
+      event.initCustomEvent(Object.keys(router.routes[route])[0], true, false, details);
+      document.dispatchEvent(event);
+    }else{
+      var event = document.createEvent('CustomEvent');
+      event.initCustomEvent('404', true, false, details);
+      document.dispatchEvent(event);
+    }
+  }
+}
