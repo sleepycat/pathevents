@@ -35,21 +35,20 @@ router.register = function(routeCollection){
 router.recognize = function(path){
   for(var route in router.routes){
     var regex = new RegExp(route);
-    matchData = regex.exec(path);
+    var matchData = regex.exec(path);
     var details = {};
+    var event = document.createEvent('CustomEvent');
     details.path = path;
     if(matchData !== null){
       var segmentValues = matchData.slice(1);
       for(var count=0, length = router.routes[route].length; count < length; count++){
         details[segment[count]]=matchData[count];
       }
-      var event = document.createEvent('CustomEvent');
       event.initCustomEvent(Object.keys(router.routes[route])[0], true, false, details);
       document.dispatchEvent(event);
     }else{
-      var event = document.createEvent('CustomEvent');
       event.initCustomEvent('404', true, false, details);
       document.dispatchEvent(event);
     }
   }
-}
+};
