@@ -43,8 +43,12 @@ var router = {};
 router.routes = {};
 
 router.createMatchString = function(pathSpec){
-  var slashesEscaped = pathSpec.replace('/', '\/');
-  var matchString = slashesEscaped.replace(/:\w+/g, '(.+)');
+  if(pathSpec.match(/^\//) !== ['/']){
+    pathSpec = '^/' + pathSpec + '$';
+  }else{
+    pathSpec = '^' + pathSpec + '$';
+  }
+  var matchString = pathSpec.replace(/:\w+/g, '(.+)');
   return matchString;
 };
 

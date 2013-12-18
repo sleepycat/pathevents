@@ -7,7 +7,11 @@ describe('router.js', function(){
     });
 
     it('creates regex for matching routes', function(){
-      expect(router.createMatchString("foo/:id")).toEqual('foo\/(.+)');
+      expect(router.createMatchString("foo/:id")).toEqual('^/foo\/(.+)$');
+    });
+
+    it('adds a leading slash to regex', function(){
+      expect(router.createMatchString("foo/:id")).toEqual('^/foo\/(.+)$');
     });
 
     it('pulls out dynamic segments from the path spec', function(){
@@ -24,8 +28,8 @@ describe('router.js', function(){
       });
 
       expected = {};
-      expected["foo\/(.+)"] = {};
-      expected["foo\/(.+)"].foo= ['bar'];
+      expected["^/foo/(.+)$"] = {};
+      expected["^/foo/(.+)$"].foo= ['bar'];
       expect(router.routes).toEqual(expected);
     });
 
@@ -33,14 +37,14 @@ describe('router.js', function(){
       router.register({
         foo: "foo/:bar"
       });
-      expect(router.recognize('foo/13')).toBe(true);
+      expect(router.recognize('/foo/13')).toBe(true);
     });
 
     it('returns false when the route is not recognized', function(){
       router.register({
         foo: "foo/:bar"
       });
-      expect(router.recognize('asdf')).toBe(false);
+      expect(router.recognize('/asdf')).toBe(false);
     });
 
     it('fires an event if a route has been registered', function(){
@@ -49,7 +53,7 @@ describe('router.js', function(){
       });
       var spy = jasmine.createSpy('eventSpy');
       document.addEventListener('foo', spy);
-      router.recognize('foo/14');
+      router.recognize('/foo/14');
       expect(spy).toHaveBeenCalled();
     });
 
@@ -81,6 +85,7 @@ describe('router.js', function(){
       window.history.replaceState({}, null, "foo/42");
       expect(spy).toHaveBeenCalled();
     });
+
   });
 
   describe('the monkeypatch', function(){
