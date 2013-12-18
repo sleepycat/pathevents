@@ -2,6 +2,27 @@
 //gives 404 or whatever if no route matches
 //listens for hashchange event and tries to match
 
+
+(function(history){
+
+  // Monkeypatch pushstate to generate an event:
+  var pushState = history.pushState;
+  history.pushState = function(state) {
+    var pushstateReturnValue = pushState.apply(history, arguments);
+    var event = document.createEvent('CustomEvent');
+    var details = {
+      'state': arguments[0]
+      , 'title': arguments[1]
+      , 'url': arguments[2]
+    }
+    event.initCustomEvent('pushstate', true, false, details);
+    document.dispatchEvent(event);
+    return pushstateReturnValue;
+  };
+
+})(window.history);
+
+
 var router = {};
 router.routes = {};
 
@@ -19,6 +40,12 @@ router.getSegments = function(pathSpec){
   return segments;
 };
 
+router.listen = function(){
+  window.addEventListener('pushstate', function(){
+    router.recognize(window.location.pathname)
+  });
+};
+
 router.register = function(routeCollection){
   for(var routeName in routeCollection){
     if(routeCollection.hasOwnProperty(routeName)){
@@ -26,7 +53,6 @@ router.register = function(routeCollection){
       var segments = this.getSegments(routeCollection[routeName]);
       router.routes[matchString] = {};
       router.routes[matchString][routeName]= segments;
-      return router.routes;
     }
   }
 };
@@ -52,3 +78,5 @@ router.recognize = function(path){
     }
   }
 };
+
+

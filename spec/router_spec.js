@@ -46,7 +46,27 @@ describe('router.js', function(){
       expect(spy).toHaveBeenCalled();
     });
 
+    it('recognizes the current path when pushstate fires', function(){
+      router.register({
+        foo: "foo/:bar"
+      });
+      router.listen();
+      var spy = jasmine.createSpy('eventSpy');
+      document.addEventListener('foo', spy);
+      window.history.pushState({}, null, "foo/42");
+      expect(spy).toHaveBeenCalled();
+    });
 
+  });
+
+  describe('the monkeypatch', function(){
+    it('monkeypatches window.history.pushState so it fires an event', function(){
+      //why in God's name would this _not_ fire an event?
+      var spy = jasmine.createSpy('eventSpy');
+      document.addEventListener('pushstate', spy);
+      window.history.pushState({}, null, "foo");
+      expect(spy).toHaveBeenCalled();
+    });
   });
 
 });
