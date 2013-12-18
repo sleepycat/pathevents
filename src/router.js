@@ -11,10 +11,10 @@
     var pushstateReturnValue = pushState.apply(history, arguments);
     var event = document.createEvent('CustomEvent');
     var details = {
-      'state': arguments[0]
-      , 'title': arguments[1]
-      , 'url': arguments[2]
-    }
+      'state': arguments[0],
+      'title': arguments[1],
+      'url': arguments[2]
+    };
     event.initCustomEvent('pushstate', true, false, details);
     document.dispatchEvent(event);
     return pushstateReturnValue;
@@ -42,7 +42,7 @@ router.getSegments = function(pathSpec){
 
 router.listen = function(){
   window.addEventListener('pushstate', function(){
-    router.recognize(window.location.pathname)
+    router.recognize(window.location.pathname);
   });
 };
 
