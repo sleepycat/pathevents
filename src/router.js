@@ -5,6 +5,8 @@
 
 (function(history){
 
+  // TODO: this is repetitive:
+
   // Monkeypatch pushstate to generate an event:
   var pushState = history.pushState;
   history.pushState = function(state) {
@@ -20,6 +22,20 @@
     return pushstateReturnValue;
   };
 
+  // Monkeypatch replacestate to generate an event:
+  var replaceState = history.replaceState;
+  history.replaceState = function(state) {
+    var replacestateReturnValue = replaceState.apply(history, arguments);
+    var event = document.createEvent('CustomEvent');
+    var details = {
+      'state': arguments[0],
+      'title': arguments[1],
+      'url': arguments[2]
+    };
+    event.initCustomEvent('replacestate', true, false, details);
+    document.dispatchEvent(event);
+    return replacestateReturnValue;
+  };
 })(window.history);
 
 
@@ -42,6 +58,9 @@ router.getSegments = function(pathSpec){
 
 router.listen = function(){
   window.addEventListener('pushstate', function(){
+    router.recognize(window.location.pathname);
+  });
+  window.addEventListener('replacestate', function(){
     router.recognize(window.location.pathname);
   });
 };
