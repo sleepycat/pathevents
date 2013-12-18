@@ -29,6 +29,20 @@ describe('router.js', function(){
       expect(router.routes).toEqual(expected);
     });
 
+    it('returns true when the route is recognized', function(){
+      router.register({
+        foo: "foo/:bar"
+      });
+      expect(router.recognize('foo/13')).toBe(true);
+    });
+
+    it('returns false when the route is not recognized', function(){
+      router.register({
+        foo: "foo/:bar"
+      });
+      expect(router.recognize('asdf')).toBe(false);
+    });
+
     it('fires an event if a route has been registered', function(){
       router.register({
         foo: "foo/:bar"

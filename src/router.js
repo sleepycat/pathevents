@@ -72,9 +72,11 @@ router.recognize = function(path){
       }
       event.initCustomEvent(Object.keys(router.routes[route])[0], true, false, details);
       document.dispatchEvent(event);
+      return true;
     }else{
       event.initCustomEvent('404', true, false, details);
       document.dispatchEvent(event);
+      return false;
     }
   }
 };
