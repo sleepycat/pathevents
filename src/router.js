@@ -80,20 +80,33 @@ router.register = function(routeCollection){
   }
 };
 
+router.getEventName = function(route){
+  for(var key in route) break;
+  return key;
+};
+
+router.getSegmentNames = function(route){
+  for(var key in route) break;
+  return route[key];
+};
+
+
+
 // XXX: this is doing WAY to many things
 router.recognize = function(path){
-  for(var route in router.routes){
-    var regex = new RegExp(route);
+  for(var routeString in router.routes){
+    var regex = new RegExp(routeString);
     var matchData = regex.exec(path);
     var details = {};
     var event = document.createEvent('CustomEvent');
-    details.path = path;
     if(matchData !== null){
       var segmentValues = matchData.slice(1);
-      for(var count=0, length = router.routes[route].length; count < length; count++){
-        details[segment[count]]=matchData[count];
+      var segmentNames = router.getSegmentNames(router.routes[routeString]);
+      for(var count=0, length = segmentNames.length; count < length; count++){
+        details[segmentNames[count]]= segmentValues[count];
       }
-      event.initCustomEvent(Object.keys(router.routes[route])[0], true, false, details);
+      details.path = path;
+      event.initCustomEvent(router.getEventName(router.routes[routeString]), true, false, details);
       document.dispatchEvent(event);
       return true;
     }else{

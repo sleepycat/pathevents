@@ -1,6 +1,29 @@
 describe('router.js', function(){
 
+  describe('router.getEventName', function(){
+
+    it('retrieves the event name from a given route', function(){
+      var route = {"^/foo/(.+)$": {foo: ['bar']}};
+      expect(router.getEventName(route["^/foo/(.+)$"])).toEqual('foo');
+    });
+
+  });
+
+  describe('router.getSegmentNames', function(){
+
+    it('retrieves the segment names from a given route', function(){
+      var route = {"^/foo/(.+)$": {foo: ['bar']}};
+      expect(router.getSegmentNames(route["^/foo/(.+)$"])).toEqual(['bar']);
+    });
+
+  });
+
   describe('router', function(){
+
+    afterEach(function(){
+      // this pushstate stuff is messing wtth karma:
+      window.history.replaceState(null, null, '/');
+    });
 
     it('creates a global var named router', function(){
       expect(typeof(router)).toEqual('object');
@@ -32,6 +55,8 @@ describe('router.js', function(){
       expected["^/foo/(.+)$"].foo= ['bar'];
       expect(router.routes).toEqual(expected);
     });
+
+
 
     it('returns true when the route is recognized', function(){
       router.register({
