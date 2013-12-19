@@ -99,25 +99,29 @@ router.assembleParams = function(path, names, values){
   return details;
 };
 
-// XXX: this is doing WAY to many things
+ // XXX: this is doing WAY to many things
 router.recognize = function(path){
+  var foundMatchingRoute = null;
+  var event = document.createEvent('CustomEvent');
   for(var routeString in router.routes){
     var regex = new RegExp(routeString);
     var matchData = regex.exec(path);
-    var event = document.createEvent('CustomEvent');
     if(matchData !== null){
       var segmentValues = matchData.slice(1);
       var segmentNames = router.getSegmentNames(router.routes[routeString]);
       var detail = this.assembleParams(path, segmentNames, segmentValues);
       event.initCustomEvent(router.getEventName(router.routes[routeString]), true, false, detail);
       document.dispatchEvent(event);
-      return true;
-    }else{
-      event.initCustomEvent('404', true, false, {path: path});
-      document.dispatchEvent(event);
-      return false;
+      foundMatchingRoute = true;
+      break;
     }
   }
+  if(foundMatchingRoute === null){
+    event.initCustomEvent('404', true, false, {path: path});
+    document.dispatchEvent(event);
+    return false;
+  }else{
+    return true;
+  }
 };
-
 
