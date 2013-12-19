@@ -90,27 +90,30 @@ router.getSegmentNames = function(route){
   return route[key];
 };
 
-
+router.assembleParams = function(path, names, values){
+  var details = {};
+  for(var count=0, length = names.length; count < length; count++){
+    details[names[count]]= values[count];
+  }
+  details.path = path;
+  return details;
+};
 
 // XXX: this is doing WAY to many things
 router.recognize = function(path){
   for(var routeString in router.routes){
     var regex = new RegExp(routeString);
     var matchData = regex.exec(path);
-    var details = {};
     var event = document.createEvent('CustomEvent');
     if(matchData !== null){
       var segmentValues = matchData.slice(1);
       var segmentNames = router.getSegmentNames(router.routes[routeString]);
-      for(var count=0, length = segmentNames.length; count < length; count++){
-        details[segmentNames[count]]= segmentValues[count];
-      }
-      details.path = path;
-      event.initCustomEvent(router.getEventName(router.routes[routeString]), true, false, details);
+      var detail = this.assembleParams(path, segmentNames, segmentValues);
+      event.initCustomEvent(router.getEventName(router.routes[routeString]), true, false, detail);
       document.dispatchEvent(event);
       return true;
     }else{
-      event.initCustomEvent('404', true, false, details);
+      event.initCustomEvent('404', true, false, {path: path});
       document.dispatchEvent(event);
       return false;
     }

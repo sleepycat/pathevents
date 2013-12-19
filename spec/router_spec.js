@@ -18,6 +18,17 @@ describe('router.js', function(){
 
   });
 
+  describe('router.assembleParams', function(){
+
+    it('assembles an object containing the details of the request', function(){
+      // this object will be the details obj in a custom event;
+      var segmentNames = ['bar', 'buzz'], segmentValues = ['32', '42'], path = '/foo/32/fizz/42';
+      var expected = {path: '/foo/32/fizz/42', bar: '32', buzz: '42'};
+      expect(router.assembleParams(path, segmentNames, segmentValues)).toEqual(expected);
+    });
+
+  });
+
   describe('router', function(){
 
     afterEach(function(){
