@@ -7,6 +7,7 @@ Pathevents gives a simple way to link a url to an event.
     <script src="/javascripts/router.js"></script>
     <script>
       router.register({
+          root: '/',
           foo: "foo/:bar",
           fizz: "fizz/:buzz",
           asdf: "asdf/:first/:second"
@@ -15,6 +16,9 @@ Pathevents gives a simple way to link a url to an event.
       // and run router.recognize when it happens:
       router.listen();
 
+      document.addEventListener('root', function(e){
+        console.log('you hit the root path!');
+      });
       document.addEventListener('foo', function(e){
         console.log(e.detail.bar);
       });

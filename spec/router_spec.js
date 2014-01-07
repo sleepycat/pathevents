@@ -29,23 +29,9 @@ describe('router.js', function(){
 
   });
 
-  describe('router', function(){
-
-    afterEach(function(){
-      // this pushstate stuff is messing wtth karma:
-      window.history.replaceState(null, null, '/');
-    });
-
-    it('creates a global var named router', function(){
-      expect(typeof(router)).toEqual('object');
-    });
-
-    it('creates regex for matching routes', function(){
-      expect(router.createMatchString("foo/:id")).toEqual('^/foo\/(.+)$');
-    });
-
-    it('adds a leading slash to regex', function(){
-      expect(router.createMatchString("foo/:id")).toEqual('^/foo\/(.+)$');
+  describe('router.getSegments', function(){
+    it('returns an empty array when there are no segments', function(){
+      expect(router.getSegments('/')).toEqual([]);
     });
 
     it('pulls out dynamic segments from the path spec', function(){
@@ -54,6 +40,35 @@ describe('router.js', function(){
 
     it('can deal with multiple segments', function(){
       expect(router.getSegments('foo/:bar/:baz')).toEqual(['bar', 'baz']);
+    });
+  });
+
+  describe('router.createMatchString', function(){
+
+    it('creates regex for matching routes', function(){
+      expect(router.createMatchString("foo/:id")).toEqual('^/foo\/(.+)$');
+    });
+
+    it('deals with the slash route', function(){
+      expect(router.createMatchString("/")).toEqual('^\/$');
+    });
+
+    it('adds a leading slash to regex', function(){
+      expect(router.createMatchString("foo/:id")).toEqual('^/foo\/(.+)$');
+    });
+
+  });
+
+  describe('router', function(){
+
+    afterEach(function(){
+      // this pushstate stuff is messing wtth karma:
+      window.history.replaceState(null, null, '/');
+      router.routes = {};
+    });
+
+    it('creates a global var named router', function(){
+      expect(typeof(router)).toEqual('object');
     });
 
     it('parses path specs to create routes', function(){
@@ -67,7 +82,16 @@ describe('router.js', function(){
       expect(router.routes).toEqual(expected);
     });
 
+    it('parses path specs to create routes', function(){
+      router.register({
+        root: "/"
+      });
 
+      expected = {};
+      expected["^\/$"] = {};
+      expected["^\/$"].root= [];
+      expect(router.routes).toEqual(expected);
+    });
 
     it('returns true when the route is recognized', function(){
       router.register({
@@ -90,6 +114,16 @@ describe('router.js', function(){
       var spy = jasmine.createSpy('eventSpy');
       document.addEventListener('foo', spy);
       router.recognize('/foo/14');
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it("won't choke if the path is just a slash", function(){
+      router.register({
+        root: "/"
+      });
+      var spy = jasmine.createSpy('eventSpy');
+      document.addEventListener('root', spy);
+      router.recognize('/');
       expect(spy).toHaveBeenCalled();
     });
 

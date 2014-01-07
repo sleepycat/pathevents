@@ -43,10 +43,12 @@ var router = {};
 router.routes = {};
 
 router.createMatchString = function(pathSpec){
-  if(pathSpec.match(/^\//) !== ['/']){
-    pathSpec = '^/' + pathSpec + '$';
-  }else{
+  if(pathSpec.match(/^\/$/)){
+    return '^\/$';
+  }else if(pathSpec.match(/^\/\w+/)){
     pathSpec = '^' + pathSpec + '$';
+  }else{
+    pathSpec = '^/' + pathSpec + '$';
   }
   var matchString = pathSpec.replace(/:\w+/g, '(.+)');
   return matchString;
@@ -54,10 +56,14 @@ router.createMatchString = function(pathSpec){
 
 router.getSegments = function(pathSpec){
   var segments = pathSpec.match(/:\w+/g);
-  for(var count=0, length = segments.length; count < length; count++) {
-     segments[count] = segments[count].replace(/:/g, '');
+  if(segments === null){
+    return [];
+  } else {
+    for(var count=0, length = segments.length; count < length; count++) {
+       segments[count] = segments[count].replace(/:/g, '');
+    }
+    return segments;
   }
-  return segments;
 };
 
 router.listen = function(){
@@ -72,8 +78,8 @@ router.listen = function(){
 router.register = function(routeCollection){
   for(var routeName in routeCollection){
     if(routeCollection.hasOwnProperty(routeName)){
-      var matchString = this.createMatchString(routeCollection[routeName]);
-      var segments = this.getSegments(routeCollection[routeName]);
+      var matchString = router.createMatchString(routeCollection[routeName]);
+      var segments = router.getSegments(routeCollection[routeName]);
       router.routes[matchString] = {};
       router.routes[matchString][routeName]= segments;
     }
@@ -104,12 +110,14 @@ router.recognize = function(path){
   var foundMatchingRoute = null;
   var event = document.createEvent('CustomEvent');
   for(var routeString in router.routes){
+    //console.log("Path is: " + path + " and routestring: " + routeString);
     var regex = new RegExp(routeString);
     var matchData = regex.exec(path);
+    //console.log("Matchdata for " + path + " is " + matchData);
     if(matchData !== null){
       var segmentValues = matchData.slice(1);
       var segmentNames = router.getSegmentNames(router.routes[routeString]);
-      var detail = this.assembleParams(path, segmentNames, segmentValues);
+      var detail = router.assembleParams(path, segmentNames, segmentValues);
       event.initCustomEvent(router.getEventName(router.routes[routeString]), true, false, detail);
       document.dispatchEvent(event);
       foundMatchingRoute = true;
