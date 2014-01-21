@@ -67,12 +67,12 @@ router.getSegments = function(pathSpec){
 };
 
 router.listen = function(){
-  window.addEventListener('pushstate', function(){
+  var recognize = function(){
     router.recognize(window.location.pathname);
-  });
-  window.addEventListener('replacestate', function(){
-    router.recognize(window.location.pathname);
-  });
+  };
+  window.addEventListener('pushstate', recognize);
+  window.addEventListener('replacestate', recognize);
+  window.addEventListener('popstate', recognize);
 };
 
 router.register = function(routeCollection){
